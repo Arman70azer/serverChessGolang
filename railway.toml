@@ -1,0 +1,4 @@
+[service]
+name = "mon-serveur-go"
+buildCommand = "go build -o main ."
+startCommand = "./main"

@@ -319,7 +319,7 @@ func main() {
 		chessHub = NewChessHub()
 		server   = NewServer(chessHub)
 		router   = mux.NewRouter()
-		port     = getenv("PORT", "8080")
+		port     = os.Getenv("PORT") // Railway assigne un port automatiquement
 	)
 
 	// Configuration des CORS pour les requêtes et WebSockets
