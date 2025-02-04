@@ -11,6 +11,7 @@ import (
 	"sync/atomic"
 
 	"github.com/google/uuid"
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
 	"github.com/notnil/chess"
@@ -179,6 +180,8 @@ func (c *ChessHub) StartGame(userID string) error {
 	// On envoie la couleur au client
 	client.ActiveConn.WriteMessage(websocket.TextMessage, []byte(client.Color))
 
+	log.Println("A game Start!!!")
+
 	// Instance de notation longue (attention : selon la version, il faut utiliser notation.LongAlgebraic{})
 	longAlgebraic := chess.LongAlgebraicNotation{}
 
@@ -316,8 +319,14 @@ func main() {
 		chessHub = NewChessHub()
 		server   = NewServer(chessHub)
 		router   = mux.NewRouter()
+		port     = getenv("PORT", "8080")
+	)
 
-		port = getenv("PORT", "8080")
+	// Configuration des CORS pour les requêtes et WebSockets
+	cors := handlers.CORS(
+		handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}),
+		handlers.AllowedMethods([]string{"GET", "POST", "OPTIONS"}),
+		handlers.AllowedOrigins([]string{"*"}), // Autorise toutes les origines
 	)
 
 	go chessHub.RunWorkerNewUser()
@@ -325,10 +334,9 @@ func main() {
 
 	router.HandleFunc("/rooms", server.PickRoom)
 	router.HandleFunc("/rooms/{client_id}", server.JoinRoom)
-	http.Handle("/", router)
 
 	log.Printf("running chess server on port :%s...", port)
-	if err := http.ListenAndServe(":"+port, nil); err != nil {
+	if err := http.ListenAndServe(":"+port, cors(router)); err != nil {
 		log.Println(err)
 	}
 }

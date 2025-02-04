@@ -114,3 +114,14 @@ to send a valid move.
 
 - Chess Engine - [notnil/chess](https://github.com/notnil/chess).
 - Websocket library - [gorilla/websocket](https://github.com/gorilla/websocket).
+
+
+# Fly.io
+
+## Action:	 Commande
+- Arrêter temporairement:	fly scale count 0
+- Redémarrer:	fly scale count 1
+- Modifier et redéployer:	fly deploy
+- Vérifier l’état: 	fly status
+- Voir les logs: 	fly logs
+- Supprimer définitivement: 	fly apps destroy ton-app
