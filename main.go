@@ -358,6 +358,7 @@ func main() {
 	})
 
 	log.Printf("running chess server on port :%s...", port)
+	log.Fatal(http.ListenAndServe("0.0.0.0:"+port, nil))
 
 	if err := http.ListenAndServe(":"+port, cors(router)); err != nil {
 		log.Println(err)
