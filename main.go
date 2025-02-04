@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
+	"net"
 	"net/http"
 	"os"
 	"strings"
@@ -335,18 +336,29 @@ func main() {
 	router.HandleFunc("/rooms", server.PickRoom)
 	router.HandleFunc("/rooms/{client_id}", server.JoinRoom)
 
-	log.Printf("running chess server on port :%s...", port)
+	// Obtention de l'adresse IP de l'hôte (localhost ou autre)
+	host, err := getHostAddress()
+	if err != nil {
+		log.Fatal("Erreur lors de la récupération de l'adresse hôte:", err)
+	}
+
+	// Imprimer les chemins avec Walk, incluant le domaine et le port
 	router.Walk(func(route *mux.Route, router *mux.Router, ancestors []*mux.Route) error {
-		// Récupérer l'URL pour chaque route
+		// Récupérer l'URL de la route
 		path, err := route.GetPathTemplate()
 		if err != nil {
 			log.Println("Erreur lors de la récupération du chemin:", err)
 			return err
 		}
-		// Afficher chaque chemin
-		log.Printf("Route path: %s", path)
+		// Construire l'URL complète en ajoutant le domaine et le port
+		fullURL := fmt.Sprintf("http://%s:%s%s", host, port, path)
+		// Afficher chaque URL complète
+		log.Printf("URL complète: %s", fullURL)
 		return nil
 	})
+
+	log.Printf("running chess server on port :%s...", port)
+
 	if err := http.ListenAndServe(":"+port, cors(router)); err != nil {
 		log.Println(err)
 	}
@@ -358,4 +370,20 @@ func getenv(key, fallback string) string {
 		return fallback
 	}
 	return value
+}
+
+// Fonction pour obtenir l'adresse de l'hôte (localhost ou autre)
+func getHostAddress() (string, error) {
+	// Utilisation de l'adresse "localhost" comme valeur par défaut
+	address := "localhost"
+	// Essayer d'obtenir l'adresse de l'hôte via une résolution DNS
+	ips, err := net.LookupIP("localhost")
+	if err != nil {
+		return address, err
+	}
+	// Retourner la première adresse trouvée
+	if len(ips) > 0 {
+		address = ips[0].String()
+	}
+	return address, nil
 }
