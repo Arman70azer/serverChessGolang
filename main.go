@@ -336,6 +336,17 @@ func main() {
 	router.HandleFunc("/rooms/{client_id}", server.JoinRoom)
 
 	log.Printf("running chess server on port :%s...", port)
+	router.Walk(func(route *mux.Route, router *mux.Router, ancestors []*mux.Route) error {
+		// Récupérer l'URL pour chaque route
+		path, err := route.GetPathTemplate()
+		if err != nil {
+			log.Println("Erreur lors de la récupération du chemin:", err)
+			return err
+		}
+		// Afficher chaque chemin
+		log.Printf("Route path: %s", path)
+		return nil
+	})
 	if err := http.ListenAndServe(":"+port, cors(router)); err != nil {
 		log.Println(err)
 	}
