@@ -205,11 +205,11 @@ func (c *ChessHub) StartGame(userID string) error {
 		var chosenMove *chess.Move
 
 		// Parcourir les coups légaux pour trouver si le coup envoyé est valide
-		for i, move := range validMoves {
+		for _, move := range validMoves {
 			encodedMove := longAlgebraic.Encode(game.Position(), move)
 
 			// Affichage pour debug
-			fmt.Printf("Coups légaux [%d] : %s\n", i, encodedMove)
+			//fmt.Printf("Coups légaux [%d] : %s\n", i, encodedMove)
 			if encodedMove == moveInput {
 				moveFound = true
 				chosenMove = move
@@ -236,6 +236,7 @@ func (c *ChessHub) StartGame(userID string) error {
 		}
 
 		if strings.Contains(moveInput, "#") {
+			println(moveInput)
 			message = []byte(moveInput)
 		}
 
