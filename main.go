@@ -235,6 +235,10 @@ func (c *ChessHub) StartGame(userID string) error {
 			break
 		}
 
+		if strings.Contains(moveInput, "#") {
+			message = []byte(moveInput)
+		}
+
 		players[oppositeColor].ActiveConn.WriteMessage(websocket.TextMessage, message)
 		index++
 	}
