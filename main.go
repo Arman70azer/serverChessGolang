@@ -248,7 +248,7 @@ func (c *ChessHub) StartGame(userID string) error {
 	}
 
 	// Envoi de l'issue de la partie
-	client.ActiveConn.WriteMessage(websocket.TextMessage, []byte(mate))
+	client.ActiveConn.WriteMessage(websocket.TextMessage, []byte(game.Method().String()+mate))
 	// client.ActiveConn.WriteMessage(websocket.TextMessage, []byte(game.Outcome()))
 	// client.ActiveConn.WriteMessage(websocket.TextMessage, []byte(game.Method().String()))
 
