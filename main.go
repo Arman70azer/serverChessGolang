@@ -186,6 +186,8 @@ func (c *ChessHub) StartGame(userID string) error {
 	// Instance de notation longue (attention : selon la version, il faut utiliser notation.LongAlgebraic{})
 	longAlgebraic := chess.LongAlgebraicNotation{}
 
+	mate := ""
+
 	for game.Outcome() == chess.NoOutcome {
 		var (
 			color         = movesOrder[index%2]
@@ -238,6 +240,7 @@ func (c *ChessHub) StartGame(userID string) error {
 		if strings.Contains(moveInput, "#") {
 			println(moveInput)
 			message = []byte(moveInput)
+			mate = moveInput
 		}
 
 		players[oppositeColor].ActiveConn.WriteMessage(websocket.TextMessage, message)
@@ -245,8 +248,9 @@ func (c *ChessHub) StartGame(userID string) error {
 	}
 
 	// Envoi de l'issue de la partie
-	client.ActiveConn.WriteMessage(websocket.TextMessage, []byte(game.Outcome()))
-	client.ActiveConn.WriteMessage(websocket.TextMessage, []byte(game.Method().String()))
+	client.ActiveConn.WriteMessage(websocket.TextMessage, []byte(mate))
+	// client.ActiveConn.WriteMessage(websocket.TextMessage, []byte(game.Outcome()))
+	// client.ActiveConn.WriteMessage(websocket.TextMessage, []byte(game.Method().String()))
 
 	return nil
 }
